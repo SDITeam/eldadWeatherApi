@@ -1,11 +1,12 @@
 package repositories
 
 import (
-	"errors"
 	"WeatherApi/src/common"
 	"WeatherApi/src/common/models"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -19,31 +20,32 @@ func buildWeatherAPIURL(cityName string, apiKey string) string {
 
 func GetWeatherByCityName(cityName string) (*models.WeatherApiResponse, error) {
 	var url string = buildWeatherAPIURL(cityName, common.API_KEY)
-
 	res, err := http.Get(url)
 
 	if err != nil {
 		return nil, errors.New("error in getting weather from api")
 	}
 
-	defer res.Body.Close()
+	defer res.Body.Close();
+	body, err := ioutil.ReadAll(res.Body)
 
-	// var errorResponse models.ErrorResponse
-	// json.NewDecoder(res.Body).Decode(&errorResponse)
+	if err != nil {
+		return nil, errors.New("error in reading response body")
+	}
 
-	// if (errorResponse.Code != 200) {
-	// 	return nil, errors.New(errorResponse.Message);
-	// }
+	var errorResponse models.ErrorResponse
+	err = json.Unmarshal(body, &errorResponse)
+
+	if (errorResponse.Code != 200) {
+		return nil, errors.New(errorResponse.Message);
+	}
 
 	var responseData models.WeatherApiResponse
-	err = json.NewDecoder(res.Body).Decode(&responseData)
+	err = json.Unmarshal(body, &responseData)
 
 	if err != nil {
 		return nil, errors.New("error in reading api response")
 	} 
-
-	jsonRes, _ := json.Marshal(responseData)
-	fmt.Print(string(jsonRes), "\n\n")
 
 	return &responseData, nil
 }
