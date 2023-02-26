@@ -1,12 +1,12 @@
 package repositories
 
 import (
-	"fmt"
-	"encoding/json"
-	"net/http"
-	"strings"
 	"WeatherApi/src/common"
 	"WeatherApi/src/common/models"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strings"
 )
 
 func buildWeatherAPIURL(cityName string, apiKey string) string {
@@ -16,11 +16,10 @@ func buildWeatherAPIURL(cityName string, apiKey string) string {
 	return fmt.Sprintf(common.API_URL, formattedCityName, apiKey)
 }
 
-
-func GetWeatherByCityName(cityName string) *models.WeatherData {
+func GetWeatherByCityName(cityName string) *models.WeatherApiResponse {
 	var url string = buildWeatherAPIURL(cityName, common.API_KEY)
 
-	res, err := http.Get(url);
+	res, err := http.Get(url)
 
 	if err != nil {
 		return nil
@@ -28,18 +27,17 @@ func GetWeatherByCityName(cityName string) *models.WeatherData {
 
 	defer res.Body.Close()
 
-	var responseMap map[string]interface{}
-    err = json.NewDecoder(res.Body).Decode(&responseMap)
-
-	fmt.Print("\n\nBody:\n", responseMap[main])
-
-    if err != nil {
-        return nil
-    }
+	var responseData models.WeatherApiResponse
+	err = json.NewDecoder(res.Body).Decode(&responseData)
 
 	if err != nil {
-		return nil
+		fmt.Print(err)
 	}
 
-	return nil;
+	//fmt.Print("\n\n", responseData, "\n\n")
+
+	// jsonRes, _ := json.Marshal(responseData)
+	// fmt.Print(string(jsonRes), "\n\n")
+
+	return &responseData
 }

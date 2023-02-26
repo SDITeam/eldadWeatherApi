@@ -1,9 +1,11 @@
 package services
 
 import (
+	"WeatherApi/src/common/models"
 	"WeatherApi/src/repositories"
 )
 
 func GetWeatherByCityName(cityName string) {
-	repositories.GetWeatherByCityName(cityName)
+	var weatherApiResponse *models.WeatherApiResponse = repositories.GetWeatherByCityName(cityName)
+
 }
