@@ -12,3 +12,8 @@ type WeatherApiResponse struct {
 	MainWeather Weather `json:"main"`
 	TimeStamp int `json:"dt"`
 }
+
+type ErrorResponse struct {
+	Code int `json:"cod"`
+	Message string `json:"message"`
+}
